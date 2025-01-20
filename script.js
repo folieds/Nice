@@ -6,7 +6,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // Game objects
-const bike = { x: 100, y: canvas.height / 2, width: 50, height: 30, color: 'blue' };
+const bike = { x: 100, y: canvas.height / 2, width: 50, height: 50 };
 const cars = [];
 let gameOver = false;
 let score = 0;
@@ -14,18 +14,24 @@ let level = 1;
 let carFrequency = 0.02;
 let carSpeedMultiplier = 1;
 
+// Load images
+const bikeImg = new Image();
+bikeImg.src = 'https://upload.wikimedia.org/wikipedia/commons/9/9f/Motorcycle_Icon.png'; // Bike image URL
+
+const carImg = new Image();
+carImg.src = 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Car-Icon.png'; // Car image URL
+
 // Load bike sound
 const bikeSound = new Audio('https://www.soundjay.com/transportation/sounds/motorcycle-ride-1.mp3');
-bikeSound.volume = 0.3; // Adjust volume
+bikeSound.volume = 0.3;
 
 // Generate random cars
 function createCar() {
     const car = {
         x: canvas.width,
         y: Math.random() * (canvas.height - 50),
-        width: 50,
-        height: 30,
-        color: 'red',
+        width: 70,
+        height: 50,
         speed: (Math.random() * 5 + 2) * carSpeedMultiplier // Cars get faster with level
     };
     cars.push(car);
@@ -39,6 +45,14 @@ function moveBike(event) {
     }
     if (event.key === 'ArrowDown' && bike.y < canvas.height - bike.height) {
         bike.y += 20;
+        playBikeSound();
+    }
+    if (event.key === 'ArrowLeft' && bike.x > 0) {
+        bike.x -= 20;
+        playBikeSound();
+    }
+    if (event.key === 'ArrowRight' && bike.x < canvas.width - bike.width) {
+        bike.x += 20;
         playBikeSound();
     }
 }
@@ -78,8 +92,7 @@ function updateGame() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw bike
-    ctx.fillStyle = bike.color;
-    ctx.fillRect(bike.x, bike.y, bike.width, bike.height);
+    ctx.drawImage(bikeImg, bike.x, bike.y, bike.width, bike.height);
 
     // Update and draw cars
     for (let i = 0; i < cars.length; i++) {
@@ -90,8 +103,7 @@ function updateGame() {
             score += 10;
             levelUp();
         }
-        ctx.fillStyle = car.color;
-        ctx.fillRect(car.x, car.y, car.width, car.height);
+        ctx.drawImage(carImg, car.x, car.y, car.width, car.height);
 
         if (checkCollision(bike, car)) {
             gameOver = true;
